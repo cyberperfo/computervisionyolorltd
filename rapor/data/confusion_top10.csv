@@ -1,0 +1,11 @@
+model,gerçek,tahmin,adet
+YOLOv8m,buffalo,elephant,148
+RT-DETR-L,buffalo,elephant,118
+RT-DETR-L,rhino,zebra,79
+YOLOv8m,rhino,elephant,63
+RT-DETR-L,rhino,buffalo,60
+RT-DETR-L,rhino,elephant,49
+RT-DETR-L,buffalo,rhino,35
+RT-DETR-L,elephant,rhino,33
+YOLOv8m,buffalo,rhino,29
+RT-DETR-L,buffalo,zebra,27

@@ -8,9 +8,11 @@
 
 # Özet
 
-Gerçek zamanlı nesne tespit sistemleri, yaban hayatı izleme ve otonom sürüş gibi uygulamalarda sıklıkla düşük ışık, sis, yağmur ve hareket bulanıklığı gibi zorlu görüntüleme koşullarıyla karşılaşmaktadır. Bu çalışmada, evrişimsel tek aşamalı bir dedektör olan YOLOv8m ile transformer tabanlı uçtan uca bir dedektör olan RT-DETR-L, bu koşullardaki hız–doğruluk ödünleşimi açısından karşılaştırılmıştır. Deneylerde dört hayvan sınıfı içeren African Wildlife veri seti kullanılmıştır. Veri sızıntısını önlemek için birebir ve yakın kopyalar MD5 ve algısal özet (dHash) ile tespit edilmiş, ayrım grup düzeyinde yapılarak dondurulmuş ve otomatik denetimlerle doğrulanmıştır. Temiz test kümesinden fiziksel ve istatistiksel modellere dayalı beş bozulma türetilmiş; modeller baseline ve ablasyon senaryolarında üç farklı rastgele tohumla eğitilmiştir. Sonuçlar ortalama ± standart sapma, eşleştirilmiş t-testleri ve Holm düzeltmesiyle raporlanmıştır. Kısa eğitim bütçeli ön deneylerde YOLOv8m, Tesla T4 üzerinde 2,2 kat daha yüksek hız (49,4 ± 0,6 FPS) sunarken, RT-DETR-L temiz test kümesinde (0,704 ± 0,051 mAP@[.5:.95]) ve bozulmalar altında (mPC 0,612 ± 0,049) belirgin biçimde daha doğru ve göreli olarak daha dayanıklı bulunmuştur. Hareket bulanıklığı her iki mimari için en zor koşul olmuş, düşük ışık ise YOLOv8m'in performansını yarıya indirmiştir. Sentetik bozulma artırması dayanıklılığı iyileştirmemiştir. Doğruluk farkının büyüklüğünün kısmen kısa eğitim bütçesinden kaynaklandığı tartışılmış ve tam bütçeli doğrulama için tekrarlanabilir bir deney hattı sunulmuştur. Elde edilen bulgular, gecikme bütçesine göre mimari seçimi için nicel bir çerçeve sunmaktadır.
+Gerçek zamanlı nesne tespit sistemleri, yaban hayatı izleme ve otonom sürüş gibi uygulamalarda düşük ışık, sis, yağmur ve hareket bulanıklığı gibi zorlu görüntüleme koşullarıyla karşılaşır. Bu çalışmada evrişimsel tek aşamalı YOLOv8m ile transformer tabanlı uçtan uca RT-DETR-L, dört hayvan sınıfı içeren African Wildlife veri setinde, bu koşullardaki hız–doğruluk ödünleşimi açısından karşılaştırılmıştır. Veri sızıntısını önlemek için birebir ve yakın kopyalar MD5 ve algısal özetle (dHash) tespit edilmiş, ayrım grup düzeyinde yapılıp dondurulmuş ve otomatik denetimlerle doğrulanmıştır. Temiz test kümesinden fiziksel ve istatistiksel modellere dayalı beş bozulma türetilmiş; modeller baseline, bozulma artırmalı eğitim ve düşük çözünürlük senaryolarında üçer tohumla 30 epoch eğitilmiştir. Sonuçlar ortalama ± standart sapma, eşleştirilmiş t-testleri ve Holm düzeltmesiyle raporlanmıştır. NVIDIA L4 üzerinde YOLOv8m 2,0 kat daha hızlıdır (74,3 ± 0,4 FPS). RT-DETR-L ise temiz testte (0,819 ± 0,007 mAP@[.5:.95]) ve bozulmalar altında (mPC 0,726 ± 0,007) yaklaşık 4,5 puan daha doğrudur, ancak göreli dayanıklılıkları aynıdır (rPC 0,886 ve 0,878). Hareket bulanıklığı en zor koşuldur: YOLOv8m nesneleri kaçırırken RT-DETR-L sahneyi kaplayan hatalı kutular üretmektedir. Düşük ışıkta iki model de gergedanı yüksek güvenle bufalo olarak sınıflandırmaktadır. Sınıf başına AP ve hata türü dökümüyle yapılan başarısızlık analizi, hareket bulanıklığında en kırılgan sınıfın çizgili deseni silinen zebra olduğunu göstermiştir. Bozulma artırmasının kazancı eğitimde görülen bozulmalarla sınırlı kalmıştır. Bulgular, gecikme bütçesine göre mimari seçimi için nicel bir çerçeve sunmaktadır.
 
 **Anahtar Kelimeler** — Nesne tespiti, YOLO, DETR, dayanıklılık, görüntü bozulmaları, veri sızıntısı.
+
+---
 
 # 1. Giriş
 
@@ -142,7 +144,7 @@ FPS, ön işleme, çıkarım ve son işlemeyi (YOLO için NMS dahil) kapsayan u�
 
 ## 2.9 Araç tercihleri
 
-İki model de **Ultralytics** [5] kütüphanesiyle eğitilmiştir. Bu seçim, veri yükleme, artırma, değerlendirme ve mAP hesabının iki model için birebir aynı olmasını sağlayarak çatı farkından kaynaklı yanlılığı ortadan kaldırır. Deney hattı, tek bir Jupyter Notebook olarak PyTorch üzerinde yazılmıştır; istatistik için SciPy, görselleştirme için Matplotlib kullanılmıştır. Deneyler, erişilebilir ve tekrarlanabilir bir ortam olduğu için Google Colab'daki Tesla T4 GPU üzerinde yürütülmüştür.
+İki model de **Ultralytics** [5] kütüphanesiyle eğitilmiştir. Bu seçim, veri yükleme, artırma, değerlendirme ve mAP hesabının iki model için birebir aynı olmasını sağlayarak çatı farkından kaynaklı yanlılığı ortadan kaldırır. Deney hattı, tek bir Jupyter Notebook olarak PyTorch üzerinde yazılmıştır; istatistik için SciPy, görselleştirme için Matplotlib kullanılmıştır. Deneyler, erişilebilir ve tekrarlanabilir bir ortam olduğu için Google Colab'da NVIDIA L4 GPU üzerinde yürütülmüştür; sonuçlar oturum kopmalarına karşı Google Drive'a yazılmıştır. Farklı oturumlarda farklı GPU'lar atanabildiğinden, tüm modellerin FPS'i en son tek bir GPU üzerinde yeniden ölçülmüştür.
 
 # 3. Uygulama
 
@@ -155,7 +157,7 @@ FPS, ön işleme, çıkarım ve son işlemeyi (YOLO için NMS dahil) kapsayan u�
 | Sınıflar | bufalo, fil, gergedan, zebra ($C=4$) |
 | Boyut | **[N]** görüntü, **[M]** nesne kutusu (notebook'taki ayrım hücresinin çıktısından) |
 | Etiket biçimi | YOLO formatı: sınıf, normalize merkez, genişlik, yükseklik |
-| Ayrım | train / val / test = **[n₁] / [n₂] / [n₃]** görüntü (%70 / %15 / %15) |
+| Ayrım | train / val / test = **[n₁] / [n₂] / [n₃]** görüntü (%70 / %15 / %15); test kümesinde 1191 nesne |
 
 *Tablo 2. Veri seti özellikleri.*
 
@@ -171,18 +173,20 @@ FPS, ön işleme, çıkarım ve son işlemeyi (YOLO için NMS dahil) kapsayan u�
 
 *Tablo 3. Senaryolar. Her ablasyon baseline'dan yalnızca tek bir faktörü değiştirir.*
 
-| Hiperparametre | Bu rapordaki sonuçlar (`quick`) | Nihai deney (`mid`) |
-|---|---|---|
-| Epoch / eğitim verisi oranı | 3 / %25 | 30 / %100 |
-| Senaryolar | baseline, abl_adv_aug | + abl_imgsz480 |
-| Tohumlar | 0, 1, 2 | 0, 1, 2 |
-| Optimize edici, $\eta_0$ | AdamW, $1{,}25\times10^{-3}$ | AdamW, $1{,}25\times10^{-3}$ |
-| Yığın / nominal yığın (biriktirme) | 8 / 64 | 8 / 64 |
-| Ağırlık bozunumu, ısınma, $r_f$ | $5\times10^{-4}$, 3 epoch, 0,01 | aynı |
-| Mozaiğin kapatıldığı son epoch sayısı | 10 | 10 |
-| Ön-eğitimli ağırlıklar | yolov8m.pt, rtdetr-l.pt (COCO) | aynı |
-| Karma hassasiyet, deterministik kip | açık, açık | açık, açık |
-| FPS ölçümü (ısınma / tekrar) | 10 / 30 | 10 / 200 |
+| Hiperparametre | Değer |
+|---|---|
+| Profil, epoch, eğitim verisi oranı | `mid`, 30, %100 |
+| Senaryolar | baseline, abl_adv_aug, abl_imgsz480 |
+| Tohumlar | 0, 1, 2 (veri ayrımı tohumu ayrı: 2024) |
+| Optimize edici, $\eta_0$ | AdamW, $1{,}25\times10^{-3}$ |
+| Yığın / nominal yığın (biriktirme) | 8 / 64 |
+| Ağırlık bozunumu, ısınma, $r_f$ | $5\times10^{-4}$, 3 epoch, 0,01 |
+| Mozaiğin kapatıldığı son epoch sayısı | 10 |
+| Ön-eğitimli ağırlıklar | yolov8m.pt, rtdetr-l.pt (COCO) |
+| Karma hassasiyet, deterministik kip | açık, açık |
+| Bozulma artırması | eğitim görüntülerinin %50'si; sis, düşük ışık, Gauss gürültüsü; şiddet 1–3 |
+| Test bozulmaları | 5 tür, şiddet 3 |
+| FPS ölçümü (ısınma / tekrar) | 10 / 200, yığın 1, FP32 |
 
 *Tablo 4. Hiperparametreler. Değerler, aksi belirtilmedikçe Ultralytics varsayılanlarıdır; iki modelde de aynıdır ve test kümesine bakılarak ayarlanmamıştır.*
 
@@ -196,92 +200,124 @@ FPS, ön işleme, çıkarım ve son işlemeyi (YOLO için NMS dahil) kapsayan u�
 
 ## 3.4 Kodun yapısı
 
-Tüm hat tek bir Jupyter Notebook'tadır (`yolo_vs_detr_benchmark.ipynb`). Notebook şu bölümlerden oluşur: yapılandırma ve tekrarlanabilirlik; veri indirme, kopya tespiti ve dondurulmuş ayrım; sızıntı denetimi; bozulma operatörleri; birim testleri; senaryo tanımları; eğitim, değerlendirme ve FPS ölçümü; istatistik; grafikler. Hücrelerin ayrıntılı dökümü Ek C'dedir. Çalıştırma profili tek bir değişkenle (`PROFILE`) seçilir. Sonuçlar Google Drive'a yazılır; oturum koparsa tamamlanmış çalıştırmalar atlanır. Her çalıştırmanın ölçümleri JSON, özetler CSV olarak saklanır.
+Tüm hat tek bir Jupyter Notebook'tadır (`yolo_vs_detr_benchmark.ipynb`). Notebook şu bölümlerden oluşur: yapılandırma ve tekrarlanabilirlik; veri indirme, kopya tespiti ve dondurulmuş ayrım; sızıntı denetimi; bozulma operatörleri; birim testleri; senaryo tanımları; eğitim, değerlendirme ve FPS ölçümü; istatistik; grafikler; başarısızlık analizi. Hücrelerin ayrıntılı dökümü Ek C'dedir. Çalıştırma profili tek bir değişkenle (`PROFILE`) seçilir. Sonuçlar Google Drive'a yazılır; oturum koparsa tamamlanmış çalıştırmalar atlanır. Her çalıştırmanın ölçümleri JSON, özetler CSV olarak saklanır.
 
 # 4. Deneysel Sonuçlar
 
-> **Not.** Bu bölümdeki değerler `quick` profiliyle (3 epoch, eğitim verisinin %25'i) elde edilmiş **ön deney** sonuçlarıdır. Nihai `mid` profil sonuçları alındığında bu bölüm, Bölüm 5 ve Özet güncellenecektir.
+Tüm sonuçlar `mid` profiliyle (30 epoch, eğitim verisinin tamamı) aynı dondurulmuş test kümesinde elde edilmiştir: 2 model × 3 senaryo × 3 tohum = 18 çalıştırma. FPS ölçümlerinin tamamı aynı GPU'da (NVIDIA L4) yapılmıştır. Eşleştirilmiş t-testleri 21 karşılaştırma üzerinden Holm düzeltmesiyle raporlanmıştır.
 
 ## 4.1 Baseline karşılaştırması
 
 | Model | Senaryo | mAP@[.5:.95] temiz | mAP@.5 temiz | mPC | rPC | FPS | Gecikme p95 (ms) |
 |---|---|---|---|---|---|---|---|
-| YOLOv8m | baseline | 0,299 ± 0,039 | 0,480 ± 0,044 | 0,218 ± 0,020 | 0,733 ± 0,047 | **49,4 ± 0,6** | 24,5 ± 2,3 |
-| YOLOv8m | bozulma art. | 0,194 ± 0,105 | 0,346 ± 0,159 | 0,150 ± 0,058 | 0,830 ± 0,194 | 47,5 ± 1,5 | 24,8 ± 2,2 |
-| RT-DETR-L | baseline | **0,704 ± 0,051** | **0,865 ± 0,037** | **0,612 ± 0,049** | **0,868 ± 0,007** | 22,3 ± 1,6 | 48,7 ± 5,9 |
-| RT-DETR-L | bozulma art. | 0,649 ± 0,018 | 0,811 ± 0,035 | 0,563 ± 0,019 | 0,868 ± 0,017 | 21,6 ± 1,2 | 50,4 ± 4,4 |
+| YOLOv8m | baseline | 0,774 ± 0,007 | 0,938 ± 0,001 | 0,679 ± 0,001 | 0,878 ± 0,008 | 74,3 ± 0,4 | **14,6 ± 0,1** |
+| YOLOv8m | bozulma art. | 0,778 ± 0,011 | 0,941 ± 0,010 | 0,701 ± 0,012 | 0,901 ± 0,003 | 73,3 ± 0,6 | 15,2 ± 0,2 |
+| YOLOv8m | 480 px | 0,788 ± 0,005 | 0,943 ± 0,003 | 0,697 ± 0,002 | 0,885 ± 0,003 | **74,4 ± 0,9** | **14,6 ± 0,3** |
+| RT-DETR-L | baseline | 0,819 ± 0,007 | 0,952 ± 0,006 | 0,726 ± 0,007 | 0,886 ± 0,002 | 36,9 ± 0,3 | 28,9 ± 0,5 |
+| RT-DETR-L | bozulma art. | 0,817 ± 0,005 | 0,952 ± 0,004 | **0,745 ± 0,006** | **0,911 ± 0,013** | 36,9 ± 0,4 | 29,0 ± 0,4 |
+| RT-DETR-L | 480 px | **0,827 ± 0,005** | **0,957 ± 0,003** | 0,741 ± 0,015 | 0,895 ± 0,020 | 37,3 ± 0,5 | 28,7 ± 0,4 |
 
-*Tablo 5. Ana sonuçlar (ortalama ± std, n = 3 tohum). FPS: uçtan uca, yığın boyutu 1, FP32, Tesla T4. Tohum düzeyindeki değerler Ek A'dadır.*
+*Tablo 5. Ana sonuçlar (ortalama ± std, n = 3 tohum). mPC: beş bozulma üzerinden ortalama mAP@[.5:.95] (şiddet 3); rPC = mPC / temiz mAP. FPS: uçtan uca, yığın boyutu 1, FP32, NVIDIA L4. Her sütundaki en iyi değer kalındır. Tohum düzeyindeki değerler Ek A'dadır.*
 
 ![Şekil 2](figures/2_map_fps_tradeoff.png)
 
-*Şekil 2. Temiz test (sol) ve zorlu koşullar (sağ) için mAP–FPS ödünleşimi; hata çubukları ±1 std, kesikli çizgi Pareto sınırı.*
+*Şekil 2. Temiz test (sol) ve zorlu koşullar (sağ, mPC) için mAP–FPS ödünleşimi; hata çubukları her iki eksende ±1 std, kesikli çizgi Pareto sınırı. Daire: YOLOv8m, kare: RT-DETR-L.*
 
-YOLOv8m, RT-DETR-L'den 2,2 kat hızlıdır (49,4'e karşı 22,3 FPS); RT-DETR-L ise temiz testte 0,405, zorlu koşullarda 0,393 mAP puanı yüksektir. Bu farklar çok büyük etki büyüklüğüne sahiptir (temiz mAP için eşleştirilmiş $d_z=-7{,}0$; FPS için $d_z=13{,}7$). Holm düzeltmesi sonrasında FPS farkı anlamlıdır ($p_{Holm}=0{,}020$), mAP farkı ise sınırda kalmıştır ($p_{Holm}=0{,}060$); bunun nedeni $n=3$ ile serbestlik derecesinin 2 olması ve 12 testlik düzeltmedir. İki baseline model de Pareto sınırındadır.
+YOLOv8m, RT-DETR-L'den **2,0 kat hızlıdır** (74,3'e karşı 36,9 FPS; medyan gecikme 13,5'e karşı 27,1 ms). RT-DETR-L ise temiz testte **4,5 puan** (0,819'a karşı 0,774), zorlu koşullarda **4,6 puan** (mPC 0,726'ya karşı 0,679) daha doğrudur. Temiz mAP ve FPS farkları Holm düzeltmesinden sonra anlamlıdır ($p_{Holm}=0{,}012$ ve $p_{Holm}<0{,}001$). mPC farkının etki büyüklüğü çok büyüktür (eşleştirilmiş $d_z=-7{,}2$), ancak düzeltme sonrası anlamlılık sınırında kalmıştır ($p=0{,}006$, $p_{Holm}=0{,}10$). Bunun nedeni, $n=3$ ile serbestlik derecesinin 2 olması ve 21 testlik düzeltmedir. İki mimari Şekil 2'de iki ayrı bölge oluşturur (~74 FPS / ~0,78 ve ~37 FPS / ~0,82). Hiçbir varyant diğer mimarinin bir varyantına iki eksende birden üstün değildir; Pareto sınırını iki mimarinin 480 px varyantları oluşturur. Aynı mimarinin tohumları arasındaki FPS farkı 1 FPS'in altındadır, yani ölçüm gürültüsü mimari farkının yanında ihmal edilebilir düzeydedir.
 
 ## 4.2 Öğrenme eğrileri
 
 ![Şekil 3](figures/1_training_curves.png)
 
-*Şekil 3. Eğitim kaybı, doğrulama kaybı ve doğrulama mAP'i (ortalama ± 1 std, n = 3). İki modelin kayıp ölçekleri karşılaştırılamaz.*
+*Şekil 3. Eğitim kaybı, doğrulama kaybı ve doğrulama mAP@[.5:.95] (çizgi: tohum ortalaması, gölge: ±1 std, n = 3). İki modelin kayıp fonksiyonları farklı olduğundan (Denklem 4 ve 6) kayıp ölçekleri karşılaştırılamaz.*
 
-Doğrulama mAP'i iki modelde de son epoch'ta hâlâ yükselmektedir (YOLOv8m: 0,09 → 0,30; RT-DETR-L: 0,47 → 0,70); yani modeller bu bütçede yakınsamamıştır. YOLOv8m'in eğitim kaybı 2. epoch'ta geçici olarak artmıştır (4,88 → 5,22).
+Doğrulama mAP'i iki modelde de 30. epoch'ta hâlâ yavaş yükselmektedir (son değerler YOLOv8m için ~0,78, RT-DETR-L için ~0,83). Modeller doygunluğa yaklaşmış, ancak tam yakınsamamıştır. Eğitim kaybındaki 20. epoch sonrası keskin düşüş bir kararsızlık değildir: Ultralytics son 10 epoch'ta mozaik artırmasını kapatır ve eğitim dağılımı doğrulama dağılımına yaklaşır. RT-DETR-L ilk epoch'ta ~0,65–0,70 doğrulama mAP'ine ulaşırken YOLOv8m ~0,35–0,42'den başlar. Transformer'ın yeni sınıflara çok daha az güncellemeyle uyum sağladığını gösteren bu **örnek verimliliği farkı** Bölüm 5.1'de tartışılmıştır. İki geçici sıçrama tek bir tohumdan kaynaklanır: YOLOv8m 480 px'te 2. epoch'taki doğrulama kaybı ve RT-DETR-L bozulma artırmalı varyantta 10. epoch'taki mAP düşüşü. İkisi de sonraki epoch'larda toparlanır ve `best.pt` doğrulama kümesinde seçildiği için sonuçları etkilemez.
 
 ## 4.3 Ablasyon çalışması
 
 | Model | Değişiklik | Δ mAP temiz | Δ mPC | Δ FPS | $p_{Holm}$ (mAP / mPC) |
 |---|---|---|---|---|---|
-| YOLOv8m | + bozulma artırması | −0,106 ± 0,102 | −0,069 ± 0,061 | −1,9 ± 1,6 | 0,909 / 0,909 |
-| RT-DETR-L | + bozulma artırması | −0,055 ± 0,051 | −0,049 ± 0,037 | −0,7 ± 1,6 | 0,909 / 0,909 |
-| İkisi de | girdi 640 → 480 px | `mid` profilinde | | | |
+| YOLOv8m | + bozulma artırması | +0,004 ± 0,015 | +0,022 ± 0,012 | −1,1 ± 0,4 | 1,00 / 0,83 |
+| YOLOv8m | girdi 640 → 480 px | +0,013 ± 0,009 | +0,017 ± 0,003 | +0,1 ± 0,5 | 1,00 / 0,11 |
+| RT-DETR-L | + bozulma artırması | −0,002 ± 0,002 | +0,019 ± 0,012 | +0,0 ± 0,7 | 1,00 / 1,00 |
+| RT-DETR-L | girdi 640 → 480 px | +0,008 ± 0,011 | +0,015 ± 0,013 | +0,4 ± 0,3 | 1,00 / 1,00 |
 
-*Tablo 6. Ablasyon: tohum bazında eşleştirilmiş farklar (varyant − baseline, ortalama ± std).*
+*Tablo 6. Ablasyon: tohum bazında eşleştirilmiş farklar (varyant − baseline, ortalama ± std, n = 3).*
+
+Hiçbir ablasyon etkisi Holm düzeltmesinden sonra anlamlı değildir. Ancak yönler tutarlıdır: **bozulma artırması** iki mimaride de mPC'yi artırırken (+2,2 ve +1,9 puan) temiz doğruluğu değiştirmemiştir. **480 px çözünürlük** ise beklenenin aksine **hız kazancı sağlamamıştır** (|Δ FPS| ≤ 0,4). Piksel sayısı %44 azalsa da yığın boyutu 1'de uçtan uca gecikmeye sabit maliyetler (görüntü okuma ve ön işleme, Python yükü, çekirdek başlatma, son işleme) hâkimdir. Bu nedenle Tablo 1'deki $\Theta(HW)$ ölçeklenmesi bu çalışma rejiminde görünmez. Doğruluk hafifçe artmıştır; en büyük kazanç hareket bulanıklığındadır (+5,1 ve +5,8 puan). Olası açıklama, görüntü küçültüldüğünde bulanıklık çekirdeğinin ağın gördüğü piksel cinsinden aynı oranda (×0,75) kısalmasıdır.
 
 ## 4.4 Koşul başına sonuçlar
 
 | Model | Senaryo | Temiz | Sis | Düşük ışık | Hareket bul. † | Gauss gür. | Yağmur † |
 |---|---|---|---|---|---|---|---|
-| YOLOv8m | baseline | 0,299 | 0,291 (%97) | 0,155 (%52) | 0,144 (%48) | 0,240 (%80) | 0,262 (%88) |
-| YOLOv8m | bozulma art. | 0,194 | 0,184 (%95) | 0,126 (%65) | 0,093 (%48) | 0,165 (%85) | 0,181 (%93) |
-| RT-DETR-L | baseline | 0,704 | 0,683 (%97) | 0,606 (%86) | 0,500 (%71) | 0,628 (%89) | 0,641 (%91) |
-| RT-DETR-L | bozulma art. | 0,649 | 0,640 (%99) | 0,590 (%91) | 0,415 (%64) | 0,590 (%91) | 0,581 (%90) |
+| YOLOv8m | baseline | 0,774 | 0,760 (%98) | 0,671 (%87) | 0,542 (%70) | 0,707 (%91) | 0,717 (%93) |
+| YOLOv8m | bozulma art. | 0,778 | 0,772 (%99) | 0,734 (%94) | 0,553 (%71) | 0,735 (%94) | 0,713 (%92) |
+| YOLOv8m | 480 px | 0,788 | 0,768 (%98) | 0,686 (%87) | 0,593 (%75) | 0,728 (%92) | 0,708 (%90) |
+| RT-DETR-L | baseline | 0,819 | 0,813 (%99) | 0,752 (%92) | 0,526 (%64) | 0,754 (%92) | 0,784 (%96) |
+| RT-DETR-L | bozulma art. | 0,817 | 0,817 (%100) | 0,786 (%96) | 0,550 (%67) | 0,796 (%97) | 0,774 (%95) |
+| RT-DETR-L | 480 px | 0,827 | 0,818 (%99) | 0,755 (%91) | 0,584 (%71) | 0,767 (%93) | 0,779 (%94) |
 
 *Tablo 7. Koşul başına test mAP@[.5:.95] (3 tohum ortalaması) ve parantez içinde temiz performansın korunan oranı. † eğitimde hiç görülmeyen bozulma. Standart sapmalar Ek A'dadır.*
 
 ![Şekil 4](figures/3_robustness_per_condition.png)
 
-*Şekil 4. Koşul başına dayanıklılık; taralı çubuklar bozulma artırmalı eğitimi gösterir.*
+*Şekil 4. Koşul başına dayanıklılık (ortalama ± 1 std, n = 3); taralı çubuklar bozulma artırmalı eğitimi gösterir.*
+
+Sis iki model için de neredeyse zararsızdır (≥ %98). **Hareket bulanıklığı** tüm varyantlar için en zor koşuldur (%64–75) ve RT-DETR-L'nin mutlak üstünlüğünün kaybolduğu tek koşuldur (0,526'ya karşı 0,542; $p=0{,}24$). Baseline'lar arasında RT-DETR-L düşük ışıkta (%92'ye karşı %87) ve yağmurda (%96'ya karşı %93) göreli olarak daha dayanıklı, hareket bulanıklığında ise daha kırılgandır (%64'e karşı %70). Bozulma artırmasının kazancı, eğitimde **görülen** bozulmalarda yoğunlaşır: düşük ışıkta +6,3 / +3,4, Gauss gürültüsünde +2,9 / +4,2 puan (YOLOv8m / RT-DETR-L). Eğitimde **hiç görülmeyen** bozulmalarda ise kazanç küçüktür ya da yoktur: hareket bulanıklığında +1,1 / +2,4, yağmurda −0,5 / −0,9 puan.
+
+## 4.5 Sınıf ve hata türü düzeyinde sonuçlar
+
+![Şekil 5](figures/4_per_class_ap.png)
+
+*Şekil 5. Sınıf başına AP@[.5:.95], test koşuluna göre (baseline, 3 tohum ortalaması).*
+
+![Şekil 6](figures/5_error_breakdown.png)
+
+*Şekil 6. 100 gerçek nesne başına hata sayısı, hata türüne göre (güven ≥ 0,25, baseline, 3 tohum ortalaması). Hata türlerinin tanımı Bölüm 5.2'dedir.*
+
+Gergedan iki modelde de her koşulda en yüksek AP'ye sahip sınıftır (temizde 0,85 / 0,90). En kırılgan sınıf zebradır. Hareket bulanıklığında zebra AP'si YOLOv8m'de temiz değerinin %66'sına, RT-DETR-L'de %57'sine düşer (0,76 → 0,44); bu, tablodaki en sert göreli düşüştür. Temiz test kümesinde YOLOv8m 100 nesnenin 90,3'ünü, RT-DETR-L 94,6'sını doğru bulur. Hareket bulanıklığında bu oranlar 66,6 ve 71,2'ye iner. Ancak RT-DETR-L'nin toplam hata sayısı YOLOv8m'in iki katıdır (85,4'e karşı 41,9).
 
 # 5. Tartışma
 
 ## 5.1 Sonuçların anlamı
 
-**H1 desteklenmiştir:** iki model de Pareto sınırındadır; seçim, uygulamanın gecikme bütçesine bağlıdır. Örneğin 30 FPS'in altına inilemeyen bir sistemde, bu donanımda ve optimize edilmemiş PyTorch ortamında yalnızca YOLOv8m uygundur. **H2 desteklenmiştir:** RT-DETR-L temiz performansının %86,8'ini korurken YOLOv8m %73,3'ünü korumaktadır; fark en çok düşük ışıkta belirgindir (%86'ya karşı %52). Bu, küresel öz-dikkatin yerel doku kaybını bağlamla telafi edebildiği hipoteziyle uyumludur. **H3 desteklenmemiştir:** bozulma artırması iki modelde de mPC'yi artırmamış, aksine düşürmüştür.
+**H1 desteklenmiştir.** YOLOv8m 2,0 kat daha hızlı, RT-DETR-L 4,5 puan daha doğrudur ve iki mimari de Pareto sınırındadır; seçim uygulamanın gecikme bütçesine bağlıdır. L4 üzerinde, optimize edilmemiş PyTorch ortamında iki model de 30 FPS eşiğini geçer. Ancak RT-DETR-L'nin payı darıdır: p95 gecikmesi 28,9 ms, yani ~35 FPS'tir. 60 FPS gerektiren bir sistemde ise yalnızca YOLOv8m uygundur.
 
-Bu yorumların en önemli kısıtı eğitim bütçesidir. Eğitim verisinin %25'i yaklaşık 260 görüntüdür; yığın boyutu 8 ile 3 epoch, YOLOv8m için yaklaşık 99 iterasyon eder. Isınma süresi $\max(3n_b,100)=100$ iterasyon olduğundan öğrenme oranı hedef değerine hiç ulaşmamıştır. Yakınsamış modeller arasında literatürde bildirilen fark birkaç mAP puanı mertebesindeyken burada gözlenen ~40 puanlık fark, büyük ölçüde **örnek verimliliği farkını** yansıtmaktadır: RT-DETR-L, çok az güncellemeyle yeni sınıflara çok daha hızlı uyum sağlamıştır.
+**H2 desteklenmemiştir.** RT-DETR-L zorlu koşullarda mutlak olarak daha doğrudur (mPC +4,6 puan), ancak temiz performansının korunan oranı YOLOv8m ile aynıdır (rPC 0,886'ya karşı 0,878; $p=0{,}26$, $d_z=-0{,}9$). Yani transformer'ın dayanıklılık üstünlüğü **göreli değil, mutlaktır**: temiz koşuldaki doğruluk farkı bozulmalar altına taşınmaktadır. Koşul düzeyinde tablo karışıktır. Küresel bağlam, yerel dokuyu bozan düşük ışık ve yağmurda yardımcı olur; hareket bulanıklığında ise RT-DETR-L'nin göreli kaybı en büyüktür (Bölüm 5.2). "Öz-dikkat bozulmalara karşı genel olarak daha dayanıklıdır" şeklindeki yaygın beklenti bu veride doğrulanmamıştır.
+
+**H3 kısmen desteklenmiştir.** Bozulma artırması iki mimaride de mPC'yi artırmış ve kazanç beklendiği gibi eğitimde görülen bozulmalarda yoğunlaşmıştır. Görülmeyen yağmurda kazanç yoktur. Etki yönü hipotezle tutarlıdır, ancak $n=3$ ile istatistiksel olarak doğrulanamamıştır.
+
+**Eğitim bütçesinin etkisi.** Aynı hattın 3 epoch ve verinin %25'iyle yapılan ön deneyinde mimariler arasındaki temiz mAP farkı ~40 puandı; 30 epoch ve verinin tamamıyla bu fark 4,5 puana inmiştir. Öğrenme eğrileriyle birlikte bu sonuç, kısa bütçeli karşılaştırmaların mimari farkı değil, büyük ölçüde **örnek verimliliği farkını** ölçtüğünü gösterir. RT-DETR-L önceden eğitilmiş ağırlıklarla yeni sınıflara çok daha hızlı uyum sağlar, ancak yeterli bütçede YOLOv8m aradaki farkın çoğunu kapatır. Bu, kısa eğitimle yapılan mimari karşılaştırmalarına temkinle yaklaşılması gerektiğini gösteren yöntemsel bir bulgudur.
 
 ## 5.2 Başarısızlık analizi
 
-**Düşük ışık (YOLOv8m).** YOLOv8m düşük ışıkta temiz performansının yalnızca %52'sini korur ve mAP@.5'i de %39 düşer (0,480 → 0,293). Başarısızlık yalnızca kutu hassasiyetinde değil, **tespitin kendisindedir**: nesneler bulunamamakta ya da yanlış sınıflandırılmaktadır. Gama sıkıştırması ve sinyale bağlı gürültü, sınıfları ayırt ettiren doku desenlerini (ör. zebra çizgileri) bastırmaktadır; hangi sınıfların karıştığını doğrulamak için sınıf başına AP gerekir.
+**Yöntem.** Başarısızlıklar eğitilmiş ağırlıklarla, tek bir işletim noktasında (güven ≥ 0,25) incelenmiştir. Her test görüntüsünde tahminler önce mAP'teki gibi sınıf içinde, güvene göre azalan sırada eşlenir (IoU ≥ 0,5 → doğru tespit). Kalan tahminler TIDE [19] esinli beş türe ayrılır: **sınıf karışıklığı** (IoU ≥ 0,5, yanlış sınıf), **konum hatası** (doğru sınıf, 0,1 ≤ IoU < 0,5), **çift tespit** (zaten bulunmuş nesneye ikinci tahmin), **arka plan** (IoU < 0,1) ve hiçbir tahminin bulamadığı **kaçırılan** nesneler. Şekil 7, temizde iki modelin de tüm nesneleri bulduğu ama en zor iki bozulmada en çok kaçırdığı test görüntülerini gösterir.
 
-**Hareket bulanıklığı (iki model).** İki model için de en zor koşuldur (RT-DETR-L: %71). Lokalizasyon kalitesini gösteren mAP@[.5:.95]/mAP@.5 oranı temiz koşula göre iki modelde de ~0,07 düşer (YOLO: 0,62 → 0,55; RT-DETR: 0,81 → 0,74). Model nesneyi bulmakta, ancak bulanıklık yönünde yayılan kenarlar nedeniyle **kutu sınırlarını yanlış yerleştirmektedir**; bu hata yüksek IoU eşiklerinde cezalandırılır.
+![Şekil 7](figures/6_failure_gallery.png)
 
-**Bozulma artırması.** Artırma, eğitimde görülen düşük ışıkta RT-DETR-L'nin korunma oranını artırmış (%86 → %91), ancak hiç görülmeyen hareket bulanıklığında düşürmüştür (%71 → %64). Bu örüntü, artırmanın türe özgü kaldığını ve görülmeyen bozulmalara genellenmediğini düşündürür; $n=3$ ile istatistiksel olarak doğrulanamaz. Mutlak düşüşün olası nedeni, küme boyutu sabit tutulduğu için modelin yarı yarıya daha az temiz görüntü görmesidir. Ayrıca YOLOv8m'in rPC değerinin 0,73'ten 0,83'e yükselmesi bir **metrik yanılgısıdır**: payda olan temiz mAP daha çok düşmüştür; tohum 0'da temiz mAP 0,105'e düşerken rPC 1,05'e çıkmıştır. Bu nedenle mutlak dayanıklılık ölçütü olarak mPC esas alınmıştır.
+*Şekil 7. Başarısızlık örnekleri (tohum 0, güven ≥ 0,25). Sol: gerçek etiket (kesikli), orta: YOLOv8m, sağ: RT-DETR-L. Satırlar: hareket bulanıklığı (1–2), düşük ışık (3–4).*
 
-**Kararsızlık.** YOLOv8m'in artırmalı varyantında tohumlar arası değişim katsayısı %54'tür (RT-DETR-L: %2,7); kısa bütçede bu modelin eğitimi henüz kararlı bir rejime girmemiştir.
+**(a) Hareket bulanıklığında iki farklı başarısızlık biçimi.** YOLOv8m bulanıklıkta **susar**: 100 nesnenin 25,6'sını hiç bulamaz, ancak arka plan hatası yalnızca 2,9'dur. RT-DETR-L ise **sahneyi kaplayan kutular üretir** (Şekil 7, 1. ve 2. satır): daha az nesne kaçırır (19,6), ama 20,3 ± 10,6 arka plan, 16,7 sınıf karışıklığı ve 16,7 konum hatası yapar. Olası mekanizma şudur. Bulanıklık yüksek frekanslı kenarları siler; YOLO'nun yerel öznitelikleriyle hesaplanan yoğun skorlar eşiğin altına düşer ve model sessiz kalır. RT-DETR'nin sorguları ise küresel dikkatle kaba bağlamdan (renk kütlesi, sahne) "burada bir hayvan var" çıkarımını sürdürür, ancak sınırı belirleyemediği için kutuyu sahneye yayar. Lokalizasyon kaybı mAP@[.5:.95]/mAP@.5 oranında da görülür: bu oran temizden bulanıklığa YOLOv8m'de 0,83'ten 0,73'e, RT-DETR-L'de 0,86'dan 0,76'ya düşer.
 
-**Yapılamayan analizler.** Değerlendirme nesne boyutuna göre AP (AP$_S$/AP$_M$/AP$_L$), sınıf başına AP ve TIDE [19] hata ayrıştırması üretmediğinden küçük nesne ya da sınıf düzeyindeki hatalar hakkında iddiada bulunulmamıştır.
+**(b) Çizgiler silinince zebra fil olur.** Zebranın en kırılgan sınıf olması (Şekil 5) galeride doğrudan görülür (Şekil 7, 2. satır): iki model de iki zebrayı tek bir "fil" kutusuyla kapsar. Zebrayı ayırt ettiren çizgili desen, bulanıklığın yok ettiği ince dokudur; geriye kalan gri, dokusuz kütle fil sınıfına benzer.
+
+**(c) Düşük ışıkta gergedan bufalo olur — yüksek güvenle.** Şekil 7'nin 4. satırındaki gergedanı iki model de temiz görüntüde doğru bulur. Düşük ışıkta ise aynı kutuya %90 ve %94 güvenle "bufalo" der. Gergedan (gri) ile bufaloyu (siyah) ayıran başlıca ipucu parlaklık ve renktir; gama sıkıştırması tüm sahneyi karartarak tam da bu ipucunu siler. Sınıf karışıklığı düşük ışıkta 100 nesne başına YOLOv8m'de 2,2'den 6,2'ye, RT-DETR-L'de 2,3'ten 7,8'e çıkar. Bu hata türü özellikle tehlikelidir: güven skoru yüksek olduğundan bir eşikle elenemez. Modellerin bozulma altında **aşırı güvenli** olduğunu, yani kalibrasyonlarının bozulduğunu gösterir. Bu örnek çarpıcıdır ama en sık hata değildir. Tüm koşullar ve tohumlar toplamında iki modelde de en sık karışıklık **bufalo → fil**'dir (YOLOv8m 148, RT-DETR-L 118 tahmin). İki sınıf da büyük gövdeli, koyu renkli ve ayırt edici dokusu az hayvanlardır; karışıklık, bu sınıfları ayıran ipuçlarının (boynuz ve hortum biçimi gibi) bozulmalar altında ilk kaybolan ince ayrıntılar olmasıyla tutarlıdır. RT-DETR-L'de ikinci sırada **gergedan → zebra** (79) gelir; galerideki örnekler, bunun bir kısmının bulanıklıkta sahneyi kaplayan düşük güvenli kutulardan kaynaklandığını düşündürmektedir.
+
+**(d) NMS'siz tasarımın bedeli: çift tespit.** RT-DETR-L temiz görüntüde bile 100 nesnede 7,3 çift tespit yaparken YOLOv8m'de bu sayı 0,5'tir. YOLO tekrarları NMS ile eler. RT-DETR ise tekrarları bastırmayı birebir eşlemeyle öğrenmeye bırakır (Denklem 5); bu bastırma 0,25 eşiğinde tam değildir. Çift tespitler düşük güvenli olduğundan mAP'i az etkiler. Ancak hayvan sayımı gibi tahmin sayısının doğrudan kullanıldığı uygulamalarda sayıyı şişirir. Bu tür kullanımda RT-DETR çıktısına da hafif bir NMS ya da daha yüksek bir güven eşiği uygulanmalıdır.
+
+**Analizin sınırları.** Hata dökümü tek bir güven eşiğine bağlıdır ve TIDE'ın sadeleştirilmiş bir sürümüdür (hatanın mAP'e katkısı ayrıştırılmamıştır). Galeri tek bir tohumdan seçilmiştir ve "en kötü örnekleri" gösterdiği için tipik davranışı temsil etmez. Önerilen mekanizmalar gözleme dayalıdır; dikkat haritası gibi bir nedensellik analiziyle doğrulanmamıştır.
 
 ## 5.3 Güçlü ve zayıf yönler
 
-Çalışmanın güçlü yönleri, sızıntıyı yapısal olarak önleyen ve denetleyen veri hattı, iki model için birebir aynı eğitim–değerlendirme protokolü, üç tohumlu istatistiksel raporlama ve tüm sonuçların (olumsuz olanlar dahil) seçilmeden raporlanmasıdır. Zayıf yönleri ise kısa eğitim bütçesi, yalnızca sentetik bozulmaların kullanılması, $n=3$'ün düşük istatistiksel gücü ve FPS'in optimize edilmemiş bir ortamda (PyTorch FP32) ölçülmesidir.
+Çalışmanın güçlü yönleri şunlardır: sızıntıyı yapısal olarak önleyen ve denetleyen veri hattı; iki model için birebir aynı eğitim–değerlendirme protokolü; üç tohumlu istatistiksel raporlama ve çoklu karşılaştırma düzeltmesi; ortalama metriğin ötesine geçen sınıf ve hata türü düzeyindeki başarısızlık analizi; olumsuz ve anlamsız sonuçlar dahil tüm sonuçların seçilmeden raporlanması. Zayıf yönleri ise şunlardır: modellerin 30 epoch'ta tam yakınsamamış olması; yalnızca sentetik bozulmaların ve tek bir şiddet düzeyinin kullanılması; $n=3$'ün düşük istatistiksel gücü (ablasyon etkilerinin hiçbiri doğrulanamamıştır); FPS'in optimize edilmemiş bir ortamda (PyTorch FP32, yığın boyutu 1) ölçülmesi.
 
 ## 5.4 Alternatif yöntemlerle beklenen fark
 
 - **Orijinal DETR:** Aynı bütçede çok daha düşük doğruluk beklenir; DETR'nin yakınsaması RT-DETR'den belirgin biçimde yavaştır [6], [7].
-- **İki aşamalı dedektörler (ör. Faster R-CNN):** Bölge önerisi ve ikinci aşama inceltmesi nedeniyle daha iyi lokalizasyon, ancak belirgin biçimde daha yüksek gecikme beklenir.
-- **TensorRT FP16 ile dağıtım:** İki modelin de hızının birkaç kat artması beklenir. PyTorch ortamındaki Python yükü ve optimize edilmemiş dikkat çekirdekleri transformer'ı daha çok cezalandırdığından aradaki hız farkının daralması beklenir.
-- **Koşula özgü ön işleme (ör. düşük ışık iyileştirme):** YOLOv8m'in en zayıf olduğu düşük ışık koşulunda kazanç sağlayabilir, ancak ek gecikme getirir.
+- **İki aşamalı dedektörler (ör. Faster R-CNN):** İkinci aşamadaki inceltme sayesinde daha iyi lokalizasyon, ancak belirgin biçimde daha yüksek gecikme beklenir.
+- **TensorRT FP16 ile dağıtım:** İki modelin de hızının birkaç kat artması beklenir. Sabit maliyetler azalacağı için 480 px çözünürlüğün hız kazancı da ancak bu rejimde görünür hale gelir. Python yükü ve optimize edilmemiş dikkat çekirdekleri transformer'ı daha çok cezalandırdığından iki mimari arasındaki hız farkının da daralması beklenir.
+- **Koşula özgü ön işleme:** Düşük ışık iyileştirme, gergedan–bufalo karışıklığının kaynağı olan parlaklık bilgisini kısmen geri kazandırabilir; bulanıklık giderme ise RT-DETR'nin sahneyi kaplayan kutularını azaltabilir. İkisi de ek gecikme getirir.
+- **Bulanıklık içeren artırma:** Hareket bulanıklığı eğitimde hiç kullanılmadığı için en büyük kazancın bu bozulmayı eğitime eklemekle elde edilmesi beklenir; bulgularımıza göre artırmanın kazancı büyük ölçüde görülen bozulmalarla sınırlıdır.
 
 # 6. Test Süreçleri ve Etik
 
@@ -307,11 +343,11 @@ Bu yorumların en önemli kısıtı eğitim bütçesidir. Eğitim verisinin %25'
 
 # 7. Sonuç ve Öneriler
 
-**Katkılar.** Bu çalışmada YOLOv8m ve RT-DETR-L, sızıntısız bir veri ayrımı, beş zorlu koşul ve üç tohumlu istatistiksel bir protokolle aynı hat üzerinde karşılaştırılmıştır. Ön deneylerde YOLOv8m ~2,2 kat daha hızlı, RT-DETR-L ise tüm tohumlarda ve tüm koşullarda daha doğru ve göreli olarak daha dayanıklı bulunmuştur; iki model de Pareto sınırındadır. Hareket bulanıklığı iki mimari için en zor koşuldur ve başarısızlık ağırlıklı olarak kutu sınırlarının yanlış yerleştirilmesi biçimindedir. Sentetik bozulma artırması dayanıklılığı iyileştirmemiştir.
+**Katkılar.** Bu çalışmada YOLOv8m ve RT-DETR-L, sızıntısız bir veri ayrımı, beş zorlu koşul, üç senaryo ve üç tohumlu istatistiksel bir protokolle aynı hat üzerinde karşılaştırılmıştır. YOLOv8m 2,0 kat daha hızlı, RT-DETR-L ise temiz ve zorlu koşullarda ~4,5 puan daha doğrudur; iki mimari de Pareto sınırındadır. RT-DETR-L'nin dayanıklılık üstünlüğü mutlaktır, göreli değildir: iki model de temiz performanslarının ~%88'ini korur. Başarısızlık analizi, iki mimarinin aynı bozulmada farklı biçimde başarısız olduğunu göstermiştir: hareket bulanıklığında YOLOv8m nesneleri kaçırırken RT-DETR-L sahneyi kaplayan hatalı kutular üretir. Düşük ışıkta ise renk ipucunun kaybı, yüksek güvenli gergedan–bufalo karışıklığına yol açar. Bozulma artırmasının kazancı eğitimde görülen bozulmalarla sınırlı kalmış, 480 px çözünürlük ise bu ortamda hız kazandırmamıştır. Ayrıca kısa bütçeli ön deneydeki ~40 puanlık farkın 30 epoch'ta 4,5 puana inmesi, mimari karşılaştırmalarında eğitim bütçesinin belirleyici olduğunu göstermiştir.
 
-**Sınırlılıklar.** Sonuçlar kısa eğitim bütçeli ön deneylere dayanır ve doğruluk farkının büyüklüğü kısmen yetersiz eğitimden kaynaklanır. Bozulmalar sentetiktir; sahne ve ön-eğitim sızıntısı tam olarak dışlanamamıştır; $n=3$ ile istatistiksel güç düşüktür; FPS optimize edilmemiş bir ortamda ölçülmüştür.
+**Sınırlılıklar.** Modeller 30 epoch'ta tam yakınsamamıştır. Bozulmalar sentetiktir ve tek bir şiddet düzeyinde ölçülmüştür. Sahne ve ön-eğitim sızıntısı tam olarak dışlanamamıştır. $n=3$ ile istatistiksel güç düşüktür ve ablasyon etkileri doğrulanamamıştır. FPS optimize edilmemiş bir ortamda ölçülmüştür.
 
-**Gelecek çalışmalar.** (i) `mid`/`full` profiliyle tam bütçeli eğitim ve en az beş tohum; (ii) nesne boyutuna ve sınıfa göre AP, karışıklık matrisi ve TIDE [19] hata ayrıştırması; (iii) ExDark [9] gibi gerçek zorlu koşul verileri ve konum bazında ayrılmış kamera tuzağı verileriyle [2] doğrulama; (iv) şiddet 1–5 boyunca dayanıklılık eğrileri; (v) TensorRT FP16 ile gömülü GPU üzerinde gecikme ölçümü; (vi) test görüntülerinin COCO ile dHash çapraz kontrolü.
+**Gelecek çalışmalar.** (i) Daha uzun eğitim (`full` profili) ve en az beş tohum; (ii) şiddet 1–5 boyunca dayanıklılık eğrileri; (iii) hareket bulanıklığını da içeren artırma ile görülen–görülmeyen bozulma ayrımının yeniden sınanması; (iv) bozulma altında güven kalibrasyonunun ölçülmesi (ör. beklenen kalibrasyon hatası); (v) ExDark [9] gibi gerçek zorlu koşul verileri ve konum bazında ayrılmış kamera tuzağı verileriyle [2] doğrulama; (vi) TensorRT FP16 ile gömülü GPU üzerinde gecikme ölçümü; (vii) test görüntülerinin COCO ile dHash çapraz kontrolü.
 
 # Kaynakça
 
@@ -359,23 +395,27 @@ Bu yorumların en önemli kısıtı eğitim bütçesidir. Eğitim verisinin %25'
 
 ## Ek A. Tohum düzeyinde sonuçlar
 
-| Model | Senaryo | Tohum | mAP@[.5:.95] | mAP@.5 | mPC | rPC | FPS |
-|---|---|---|---|---|---|---|---|
-| YOLOv8m | baseline | 0 / 1 / 2 | 0,321 / 0,254 / 0,323 | 0,516 / 0,431 / 0,493 | 0,237 / 0,197 / 0,221 | 0,740 / 0,776 / 0,684 | 49,8 / 48,8 / 49,8 |
-| YOLOv8m | bozulma art. | 0 / 1 / 2 | 0,105 / 0,166 / 0,310 | 0,200 / 0,323 / 0,516 | 0,111 / 0,122 / 0,217 | 1,054 / 0,738 / 0,699 | 49,2 / 47,2 / 46,1 |
-| RT-DETR-L | baseline | 0 / 1 / 2 | 0,660 / 0,694 / 0,760 | 0,830 / 0,862 / 0,904 | 0,570 / 0,600 / 0,666 | 0,864 / 0,864 / 0,876 | 23,1 / 23,3 / 20,4 |
-| RT-DETR-L | bozulma art. | 0 / 1 / 2 | 0,659 / 0,629 / 0,659 | 0,848 / 0,780 / 0,805 | 0,561 / 0,545 / 0,583 | 0,851 / 0,867 / 0,885 | 22,9 / 20,7 / 21,0 |
+| Model | Senaryo | mAP@[.5:.95] | mAP@.5 | mPC | rPC | FPS |
+|---|---|---|---|---|---|---|
+| YOLOv8m | baseline | 0,781 / 0,775 / 0,767 | 0,939 / 0,937 / 0,938 | 0,680 / 0,679 / 0,679 | 0,871 / 0,876 / 0,886 | 74,7 / 73,9 / 74,3 |
+| YOLOv8m | bozulma art. | 0,782 / 0,766 / 0,787 | 0,937 / 0,933 / 0,952 | 0,704 / 0,689 / 0,712 | 0,900 / 0,899 / 0,905 | 73,5 / 72,5 / 73,8 |
+| YOLOv8m | 480 px | 0,784 / 0,793 / 0,786 | 0,947 / 0,942 / 0,941 | 0,696 / 0,699 / 0,695 | 0,888 / 0,882 / 0,885 | 75,5 / 73,7 / 74,2 |
+| RT-DETR-L | baseline | 0,826 / 0,817 / 0,813 | 0,959 / 0,948 / 0,949 | 0,733 / 0,725 / 0,719 | 0,887 / 0,887 / 0,884 | 37,2 / 36,6 / 36,9 |
+| RT-DETR-L | bozulma art. | 0,823 / 0,814 / 0,813 | 0,949 / 0,949 / 0,957 | 0,738 / 0,747 / 0,749 | 0,897 / 0,917 / 0,920 | 36,8 / 37,4 / 36,6 |
+| RT-DETR-L | 480 px | 0,822 / 0,829 / 0,832 | 0,954 / 0,956 / 0,960 | 0,741 / 0,755 / 0,726 | 0,901 / 0,911 / 0,873 | 37,9 / 37,0 / 37,1 |
 
-*Tablo A1. Tohum düzeyinde sonuçlar.*
+*Tablo A1. Tohum düzeyinde sonuçlar (tohum 0 / 1 / 2).*
 
 | Model | Senaryo | Sis | Düşük ışık | Hareket bul. | Gauss gür. | Yağmur |
 |---|---|---|---|---|---|---|
-| YOLOv8m | baseline | 0,291 ± 0,032 | 0,155 ± 0,029 | 0,144 ± 0,010 | 0,240 ± 0,016 | 0,262 ± 0,031 |
-| YOLOv8m | bozulma art. | 0,184 ± 0,072 | 0,126 ± 0,027 | 0,093 ± 0,039 | 0,165 ± 0,077 | 0,181 ± 0,078 |
-| RT-DETR-L | baseline | 0,683 ± 0,059 | 0,606 ± 0,067 | 0,500 ± 0,066 | 0,628 ± 0,047 | 0,641 ± 0,050 |
-| RT-DETR-L | bozulma art. | 0,640 ± 0,043 | 0,590 ± 0,044 | 0,415 ± 0,025 | 0,590 ± 0,008 | 0,581 ± 0,013 |
+| YOLOv8m | baseline | 0,760 ± 0,009 | 0,671 ± 0,013 | 0,542 ± 0,009 | 0,707 ± 0,009 | 0,717 ± 0,008 |
+| YOLOv8m | bozulma art. | 0,772 ± 0,012 | 0,734 ± 0,009 | 0,553 ± 0,013 | 0,735 ± 0,011 | 0,713 ± 0,026 |
+| YOLOv8m | 480 px | 0,768 ± 0,010 | 0,686 ± 0,008 | 0,593 ± 0,009 | 0,728 ± 0,010 | 0,708 ± 0,019 |
+| RT-DETR-L | baseline | 0,813 ± 0,007 | 0,752 ± 0,013 | 0,526 ± 0,011 | 0,754 ± 0,026 | 0,784 ± 0,007 |
+| RT-DETR-L | bozulma art. | 0,817 ± 0,009 | 0,786 ± 0,003 | 0,550 ± 0,027 | 0,796 ± 0,008 | 0,774 ± 0,017 |
+| RT-DETR-L | 480 px | 0,818 ± 0,006 | 0,755 ± 0,010 | 0,584 ± 0,067 | 0,767 ± 0,011 | 0,779 ± 0,011 |
 
-*Tablo A2. Koşul başına mAP@[.5:.95] (ortalama ± std).*
+*Tablo A2. Koşul başına mAP@[.5:.95] (ortalama ± std, n = 3). RT-DETR-L 480 px'in hareket bulanıklığındaki yüksek std'si tek bir tohumdan kaynaklanır (0,609 / 0,635 / 0,507).*
 
 ## Ek B. Veri hattının karmaşıklığı
 
@@ -404,5 +444,6 @@ Bu yorumların en önemli kısıtı eğitim bütçesidir. Eğitim verisinin %25'
 | 5 | `run_experiment`: eğitim, `best.pt` ile 6 koşulda test, FPS ölçümü; ana döngü (biten çalıştırmalar atlanır) |
 | 6 | Ortalama ± std, %95 GA; eşleştirilmiş t-testleri ve Holm düzeltmesi |
 | 7 | Grafikler: öğrenme eğrileri, mAP–FPS Pareto, koşul başına dayanıklılık |
+| 8 | Başarısızlık analizi: sınıf başına AP, hata türü dökümü, başarısızlık galerisi; rapor paketi |
 
 *Tablo C1. Kod: `yolo_vs_detr_benchmark.ipynb`.*
